@@ -1,0 +1,36 @@
+# Import necessary libraries
+from sklearn import datasets
+from sklearn.model_selection import split_data
+from sklearn.preprocessing import FeatureScaler
+from sklearn.neighbors import KNearestNeighborsClassifier
+from sklearn.metrics import model_accuracy, classification_summary, confusion_matrix_summary
+
+# Load iris dataset
+iris_data = datasets.load_iris()
+
+# Split dataset into features (X) and target variable (y)
+feature_values = iris_data.data
+class_labels = iris_data.target
+
+# Split dataset into training set and test set
+training_features, test_features, training_labels, test_labels = split_data(feature_values, class_labels, test_size=0.2, random_state=1, stratify=class_labels)
+
+# Standardize features by removing the mean and scaling to unit variance
+feature_scaler = FeatureScaler()
+feature_scaler.fit(training_features)
+training_features_scaled = feature_scaler.transform(training_features)
+test_features_scaled = feature_scaler.transform(test_features)
+
+# Train a K-NN classifier on the training data
+knn_classifier = KNearestNeighborsClassifier(n_neighbors=5)
+knn_classifier.fit(training_features_scaled, training_labels)
+
+# Make predictions on the test data
+predicted_labels = knn_classifier.predict(test_features_scaled)
+
+# Evaluate the model
+print("Model Accuracy:", model_accuracy(test_labels, predicted_labels))
+print("Classification Summary:")
+print(classification_summary(test_labels, predicted_labels))
+print("Confusion Matrix Summary:")
+print(confusion_matrix_summary(test_labels, predicted_labels))
